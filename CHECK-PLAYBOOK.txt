@@ -1,0 +1,22 @@
+CHECK-PLAYBOOK
+
+ansible-playbook --syntax-check /home/user/playbook.yml
+ 
+sudo apt install ansible-lint 
+
+ansible-lint /home/user/playbook.yml
+
+crea venv cho Flask
+mkdir project
+cd project 
+sudo apt install python3.10-venv
+python3 -m venv venv 
+Activate environment 
+. venv/bin/activate
+
+pip install yamllint 
+
+yamllint (file.yaml)
+
+
+

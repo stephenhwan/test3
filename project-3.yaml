@@ -1,0 +1,79 @@
+project-3.yaml
+---
+- name: Install and configure Firewall, Database, and Web Server
+  hosts: my_servers
+  become: true
+
+  tasks:
+    - name: Install Firewalld
+      apt:
+        name: firewalld
+        state: present
+
+    - name: Ensure Firewalld is running
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Configure firewall for Database
+      firewalld:
+        service: mysql
+        permanent: true
+        state: enabled
+
+    - name: Install MariaDB
+      apt:
+        name: mariadb-server
+        state: present
+
+    - name: Start MariaDB service
+      service:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: Create database
+      mysql_db:
+        name: inventory
+        state: present
+      become: true
+
+    - name: Create user in database
+      mysql_user:
+        name: inventoryuser
+        password: mypassword
+        priv: "inventory.*:ALL"
+        host: localhost
+        state: present
+      become: true
+
+    - name: Load Product Inventory Information to database
+      mysql_db:
+        name: inventory
+        state: import
+        target: /path/to/inventory.sql
+      become: true
+
+    - name: Configure firewall for Web Server
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+
+    - name: Install Apache HTTP Server
+      apt:
+        name: apache2
+        state: present
+
+    - name: Change DirectoryIndex to index.php
+      lineinfile:
+        path: /etc/apache2/mods-enabled/dir.conf
+        regexp: '^DirectoryIndex'
+        line: 'DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm'
+
+    - name: Start Apache HTTP Server
+      service:
+        name: apache2
+        state: started
+        enabled: true
